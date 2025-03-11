@@ -1,3 +1,6 @@
+require 'mime/types'
+require 'google/cloud/storage'
+
 module SaralUploaderExt
   class UploadFilesController < ApplicationController
     def generate_upload_signed_url
