@@ -48,7 +48,7 @@ module SaralUploaderExt
                                headers: { "Content-Type" => file_type })
 
       host_name = 'https://storage.googleapis.com'
-      render json: { success: true, message: 'Signed URL generated', url: url, file_path: file_path, file_path_url: "#{host_name}/#{bucket_name}/#{file_path}", content_type: file_type }, status: :ok
+      render json: { success: true, message: 'Signed URL generated', url: url, file_path: file_path, file_url: "#{host_name}/#{bucket_name}/#{file_path}", content_type: file_type }, status: :ok
     rescue SaralUploaderExt::CustomError => e
       render json: { success: false, message: e.message, description: e.description }, status: :bad_request
     rescue => e
