@@ -48,7 +48,45 @@ module SaralUploaderExt
                                headers: { "Content-Type" => file_type })
 
       host_name = 'https://storage.googleapis.com'
-      render json: { success: true, message: 'Signed URL generated', url: url, file_path: "#{host_name}/#{bucket_name}/#{file_path}", content_type: file_type }, status: :ok
+      render json: { success: true, message: 'Signed URL generated', url: url, file_path: file_path, file_path_url: "#{host_name}/#{bucket_name}/#{file_path}", content_type: file_type }, status: :ok
+    rescue SaralUploaderExt::CustomError => e
+      render json: { success: false, message: e.message, description: e.description }, status: :bad_request
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
+    end
+
+    def delete_file_from_bucket
+      bucket_name = Rails.application.config.gcloud_bucket
+      unless bucket_name.present?
+        raise SaralUploaderExt::CustomError.new('Bucket name must be present', "'G_CLOUD_BUCKET' is not found in .env file in main rails application")
+      end
+
+      gcloud_project_id = Rails.application.config.gcloud_project_id
+      unless gcloud_project_id.present?
+        raise SaralUploaderExt::CustomError.new('Gcloud project ID must be present', "'G_CLOUD_PROJECT_ID' is not found in .env file in main rails application")
+      end
+
+      gcloud_keyfile = Rails.application.config.gcloud_keyfile
+      unless gcloud_keyfile.present?
+        raise SaralUploaderExt::CustomError.new('Gcloud keyfile must be present', "'G_CLOUD_KEYFILE' is not found in .env file in main rails application")
+      end
+
+      file_path = params[:file_path]
+      unless file_path.present?
+        raise SaralUploaderExt::CustomError.new('File path must be present', "File path must be present in 'file_path' key")
+      end
+
+      storage = Google::Cloud::Storage.new(project_id: gcloud_project_id, credentials: gcloud_keyfile)
+      bucket = storage.bucket(bucket_name)
+
+      raise 'Bucket not found' if bucket.nil?
+
+      file = bucket.file(file_path)
+      raise 'File not found' if file.nil?
+
+      file.delete
+      render json: { success: true, message: 'File deleted successfully', file_path: file_path }, status: :ok
+
     rescue SaralUploaderExt::CustomError => e
       render json: { success: false, message: e.message, description: e.description }, status: :bad_request
     rescue => e
