@@ -1,5 +1,7 @@
 require "saral_uploader_ext/version"
 require "saral_uploader_ext/engine"
+require 'active_support/core_ext/hash/indifferent_access'
+require 'yaml'
 
 module SaralUploaderExt
   def self.config
