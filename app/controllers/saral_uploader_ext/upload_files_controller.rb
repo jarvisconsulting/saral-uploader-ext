@@ -4,17 +4,17 @@ require 'google/cloud/storage'
 module SaralUploaderExt
   class UploadFilesController < ApplicationController
     def generate_upload_signed_url
-      bucket_name = Rails.application.config.gcloud_bucket
+      bucket_name = @app_config[:gcloud_bucket]
       unless bucket_name.present?
         raise SaralUploaderExt::CustomError.new('Bucket name must be present', "'G_CLOUD_BUCKET' is not found in .env file in main rails application")
       end
 
-      gcloud_project_id = Rails.application.config.gcloud_project_id
+      gcloud_project_id = @app_config[:gcloud_project_id]
       unless gcloud_project_id.present?
         raise SaralUploaderExt::CustomError.new('Gcloud project ID must be present', "'G_CLOUD_PROJECT_ID' is not found in .env file in main rails application")
       end
 
-      gcloud_keyfile = Rails.application.config.gcloud_keyfile
+      gcloud_keyfile = @app_config[:gcloud_keyfile]
       unless gcloud_keyfile.present?
         raise SaralUploaderExt::CustomError.new('Gcloud keyfile must be present', "'G_CLOUD_KEYFILE' is not found in .env file in main rails application")
       end
@@ -39,7 +39,7 @@ module SaralUploaderExt
       storage = Google::Cloud::Storage.new(project_id: gcloud_project_id, credentials: gcloud_keyfile)
       bucket = storage.bucket(bucket_name)
 
-      expiration_time = Rails.application.config.signed_url_expiration_time_in_seconds || (15 * 60) # default expiration time is 15 minutes
+      expiration_time = @app_config[:signed_url_expiration_time_in_seconds].presence&.to_i || (15 * 60) # default expiration time is 15 minutes
 
       url = bucket&.signed_url(file_path,
                                method: "PUT",

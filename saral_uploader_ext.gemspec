@@ -26,5 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "google-cloud-storage"
   spec.add_dependency "mime-types"
 
-  spec.post_install_message = "Thanks for installing SaralUploaderExt. Please set environment variable mentioned in README.md"
+  spec.post_install_message = "Thanks for installing saral-uploader-ext. Please set environment variable mentioned in README.md"
 end

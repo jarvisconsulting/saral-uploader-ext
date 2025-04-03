@@ -3,11 +3,22 @@ Short description and motivation.
 
 ## Usage
 How to use my plugin.
-Add environment variable mentioned below into Rails application.
-1. G_CLOUD_BUCKET
-2. G_CLOUD_PROJECT_ID
-3. G_CLOUD_KEYFILE
-4. SIGNED_URL_EXPIRATION_TIME_IN_SECONDS(optional, default expiration time: 15 minutes)
+create a 'config/saral_uploader_ext.yml' file and define these config:
+
+defaults: &DEFAULTS
+gcloud_bucket: <%= ENV['G_CLOUD_BUCKET'] %>
+gcloud_project_id: <%= ENV['G_CLOUD_PROJECT_ID'] %>
+gcloud_keyfile: <%= ENV['G_CLOUD_KEYFILE'] %>
+signed_url_expiration_time_in_seconds: <%= ENV['SIGNED_URL_EXPIRATION_TIME_IN_SECONDS'] %>
+
+development:
+<<: *DEFAULTS
+
+test:
+<<: *DEFAULTS
+
+production:
+<<: *DEFAULTS
 
 ## Installation
 Add this line to your application's Gemfile:
