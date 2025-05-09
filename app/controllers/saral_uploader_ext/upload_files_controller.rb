@@ -86,7 +86,11 @@ module SaralUploaderExt
       url = bucket.signed_url(file_path.to_s, expires: expiration_time, version: :v4)
       raise 'File not found in this file_path' if url.nil?
 
-      url
+      render json: { success: true, message: 'Signed URL generated', url: url }, status: :ok
+    rescue SaralUploaderExt::CustomError => e
+      render json: { success: false, message: e.message, description: e.description }, status: :bad_request
+    rescue => e
+      render json: { success: false, message: e.message }, status: :bad_request
     end
 
     def delete_file_from_bucket
