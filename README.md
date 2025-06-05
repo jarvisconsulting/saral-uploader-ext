@@ -10,7 +10,7 @@ SaralUploaderExt is a Ruby on Rails engine that enables Google Cloud Storage fil
 
 ## 🔧 Installation
 - Add this line to your application’s Gemfile:
-- <pre lang="ruby">
+<pre lang="ruby">
    gem 'saral_uploader_ext', git: '[https://github.com/your-org/saral_uploader_ext.git](https://github.com/jarvisconsulting/saral-uploader-ext)'
 </pre>
 Then run
