@@ -24,7 +24,6 @@ bundle install
 
 2. Create config file: config/saral_uploader_ext.yml
  <pre lang="yaml">
-```yaml
 defaults: &DEFAULTS
   gcloud_bucket: <%= ENV['GCLOUD_BUCKET_NAME'] %>
   gcloud_project_id: <%= ENV['GCLOUD_PROJECT'] %>
@@ -39,7 +38,6 @@ test:
 
 production:
   <<: *DEFAULTS
-```
 </pre>
 
 development:
