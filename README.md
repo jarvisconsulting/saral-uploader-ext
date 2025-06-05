@@ -43,13 +43,14 @@ production:
 </pre>
 
 # Routes.rb
-mount SaralUploaderExt::Engine => '/saral_uploader'
+<pre lang="ruby"> mount SaralUploaderExt::Engine => '/saral_uploader' </pre>
 
 To restrict access (e.g., only logged-in users), wrap it in an authentication constraint:
-
-authenticate :user do
-  mount SaralUploaderExt::Engine => '/saral_uploader'
-end
+<pre lang="ruby">
+   authenticate :user do
+     mount SaralUploaderExt::Engine => '/saral_uploader'
+   end
+</pre>
 
 ## 📡 Available Endpoints
 
