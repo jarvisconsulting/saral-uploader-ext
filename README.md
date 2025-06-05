@@ -42,10 +42,7 @@ production:
   <<: *DEFAULTS
 </pre>
 
-## 🛣️ Routing
-Mount the engine in your main app’s config/routes.rb:
-
-# Access
+# Routes.rb
 mount SaralUploaderExt::Engine => '/saral_uploader'
 
 To restrict access (e.g., only logged-in users), wrap it in an authentication constraint:
