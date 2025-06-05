@@ -2,11 +2,11 @@
 SaralUploaderExt is a Ruby on Rails engine that enables Google Cloud Storage file uploads via signed URLs, downloads, and deletions. It supports secure file management using V4 signed URLs, making it ideal for frontend direct uploads without exposing credentials.
 
 ## ✨ Features
-✅ Generate signed upload URLs for Google Cloud Storage
-✅ Fetch signed download URLs using the file path
-✅ Delete files from the GCS bucket
-✅ Configurable through environment variables and YAML
-✅ Can be mounted in your main app with route-level authentication
+- ✅ Generate signed upload URLs for Google Cloud Storage
+- ✅ Fetch signed download URLs using the file path
+- ✅ Delete files from the GCS bucket
+- ✅ Configurable through environment variables and YAML
+- ✅ Can be mounted in your main app with route-level authentication
 
 ## 🔧 Installation
 Add this line to your application’s Gemfile:
@@ -64,5 +64,6 @@ gem 'google-cloud-storage'
 gem 'mime-types'
 gem 'dotenv-rails' # (optional, for .env file support)
 
-##🧑‍💻 Author
-Maintained by [Chitranshoo Prakash, Rajnish kumar mishra / jarvis.consulting].
+## 🛠 Maintained By
+
+Maintained by **Chitranshoo Prakash**, **Rajnish Kumar Mishra** / **Jarvis Consulting**
