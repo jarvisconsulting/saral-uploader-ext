@@ -23,11 +23,24 @@ bundle install
 - SIGNED_URL_EXPIRATION_TIME_IN_SECONDS=900 # optional, defaults to 900 (15 minutes)
 
 2. Create config file: config/saral_uploader_ext.yml
-  - defaults: &DEFAULTS
-  - gcloud_bucket: <%= ENV['GCLOUD_BUCKET_NAME'] %>
-  - gcloud_project_id: <%= ENV['GCLOUD_PROJECT'] %>
-  - gcloud_keyfile: <%= ENV['GCLOUD_KEYFILE'] %>
-  - signed_url_expiration_time_in_seconds: <%= ENV['SIGNED_URL_EXPIRATION_TIME_IN_SECONDS'] %>
+ <pre lang="yaml">
+```yaml
+defaults: &DEFAULTS
+  gcloud_bucket: <%= ENV['GCLOUD_BUCKET_NAME'] %>
+  gcloud_project_id: <%= ENV['GCLOUD_PROJECT'] %>
+  gcloud_keyfile: <%= ENV['GCLOUD_KEYFILE'] %>
+  signed_url_expiration_time_in_seconds: <%= ENV['SIGNED_URL_EXPIRATION_TIME_IN_SECONDS'] %>
+
+development:
+  <<: *DEFAULTS
+
+test:
+  <<: *DEFAULTS
+
+production:
+  <<: *DEFAULTS
+```
+</pre>
 
 development:
   <<: *DEFAULTS
