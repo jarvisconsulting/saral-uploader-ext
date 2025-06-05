@@ -9,25 +9,25 @@ SaralUploaderExt is a Ruby on Rails engine that enables Google Cloud Storage fil
 - ✅ Can be mounted in your main app with route-level authentication
 
 ## 🔧 Installation
-Add this line to your application’s Gemfile:
-gem 'saral_uploader_ext', git: '[https://github.com/your-org/saral_uploader_ext.git](https://github.com/jarvisconsulting/saral-uploader-ext)'
+- Add this line to your application’s Gemfile:
+- gem 'saral_uploader_ext', git: '[https://github.com/your-org/saral_uploader_ext.git](https://github.com/jarvisconsulting/saral-uploader-ext)'
 Then run:
 bundle install
 
 ## 🛠️ Configuration
 1. Add environment variables to your main app’s .env:
    
-GCLOUD_BUCKET_NAME=your_bucket_name
-GCLOUD_PROJECT=your_gcloud_project_id
-GCLOUD_KEYFILE=/path/to/your/gcloud/keyfile.json
-SIGNED_URL_EXPIRATION_TIME_IN_SECONDS=900 # optional, defaults to 900 (15 minutes)
+- GCLOUD_BUCKET_NAME=your_bucket_name
+- GCLOUD_PROJECT=your_gcloud_project_id
+- GCLOUD_KEYFILE=/path/to/your/gcloud/keyfile.json
+- SIGNED_URL_EXPIRATION_TIME_IN_SECONDS=900 # optional, defaults to 900 (15 minutes)
 
 2. Create config file: config/saral_uploader_ext.yml
-  defaults: &DEFAULTS
-  gcloud_bucket: <%= ENV['GCLOUD_BUCKET_NAME'] %>
-  gcloud_project_id: <%= ENV['GCLOUD_PROJECT'] %>
-  gcloud_keyfile: <%= ENV['GCLOUD_KEYFILE'] %>
-  signed_url_expiration_time_in_seconds: <%= ENV['SIGNED_URL_EXPIRATION_TIME_IN_SECONDS'] %>
+  - defaults: &DEFAULTS
+  - gcloud_bucket: <%= ENV['GCLOUD_BUCKET_NAME'] %>
+  - gcloud_project_id: <%= ENV['GCLOUD_PROJECT'] %>
+  - gcloud_keyfile: <%= ENV['GCLOUD_KEYFILE'] %>
+  - signed_url_expiration_time_in_seconds: <%= ENV['SIGNED_URL_EXPIRATION_TIME_IN_SECONDS'] %>
 
 development:
   <<: *DEFAULTS
@@ -40,7 +40,7 @@ production:
 ## 🛣️ Routing
 Mount the engine in your main app’s config/routes.rb:
 
-# Public access
+# Access
 mount SaralUploaderExt::Engine => '/saral_uploader'
 
 To restrict access (e.g., only logged-in users), wrap it in an authentication constraint:
