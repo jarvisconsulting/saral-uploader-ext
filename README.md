@@ -40,14 +40,6 @@ production:
   <<: *DEFAULTS
 </pre>
 
-development:
-  <<: *DEFAULTS
-
-test:
-  <<: *DEFAULTS
-
-production:
-  <<: *DEFAULTS
 ## 🛣️ Routing
 Mount the engine in your main app’s config/routes.rb:
 
