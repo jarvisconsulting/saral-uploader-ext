@@ -63,11 +63,13 @@ end
 | GET    | /saral_uploader/upload_files/delete_file_from_bucket                | Delete file from GCS bucket          | `file_path`                    |
 
 ## 🧱 Dependencies
-Ensure your application includes:
+Ensure your Gemfile includes:
 
+<pre lang="ruby"> 
 gem 'google-cloud-storage'
 gem 'mime-types'
 gem 'dotenv-rails' # (optional, for .env file support)
+</pre>
 
 ## 🛠 Maintained By
 
