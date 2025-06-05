@@ -18,11 +18,12 @@ Then run
 
 ## 🛠️ Configuration
 1. Add environment variables to your main app’s .env:
-   
-- GCLOUD_BUCKET_NAME=your_bucket_name
-- GCLOUD_PROJECT=your_gcloud_project_id
-- GCLOUD_KEYFILE=/path/to/your/gcloud/keyfile.json
-- SIGNED_URL_EXPIRATION_TIME_IN_SECONDS=900 # optional, defaults to 900 (15 minutes)
+<pre lang="ruby">
+ GCLOUD_BUCKET_NAME=your_bucket_name
+  GCLOUD_PROJECT=your_gcloud_project_id
+  GCLOUD_KEYFILE=/path/to/your/gcloud/keyfile.json
+  SIGNED_URL_EXPIRATION_TIME_IN_SECONDS=900 # optional, defaults to 900 (15 minutes)
+</pre>
 
 2. Create config file: config/saral_uploader_ext.yml
  <pre lang="yaml">
