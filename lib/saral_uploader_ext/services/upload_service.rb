@@ -4,7 +4,8 @@ require 'securerandom'
 
 module SaralUploaderExt
   class UploadService
-    def initialize(app_config)
+    def initialize(app_config = nil)
+      app_config ||= SaralUploaderExt.config
       @bucket_name = app_config[:gcloud_bucket]
       @gcloud_project_id = app_config[:gcloud_project_id]
       @gcloud_keyfile = app_config[:gcloud_keyfile]
