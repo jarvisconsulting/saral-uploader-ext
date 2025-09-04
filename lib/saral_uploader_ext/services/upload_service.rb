@@ -5,11 +5,12 @@ require 'securerandom'
 module SaralUploaderExt
   class UploadService
     def initialize(app_config = nil)
-      app_config ||= SaralUploaderExt.config
-      @bucket_name = app_config[:gcloud_bucket]
-      @gcloud_project_id = app_config[:gcloud_project_id]
-      @gcloud_keyfile = app_config[:gcloud_keyfile]
-      @expiration_time = app_config[:signed_url_expiration_time_in_seconds].presence&.to_i || (15 * 60)
+      app_config ||= {}
+      default_config = SaralUploaderExt.config
+      @bucket_name = app_config[:gcloud_bucket] || default_config[:gcloud_bucket]
+      @gcloud_project_id = default_config[:gcloud_project_id]
+      @gcloud_keyfile = default_config[:gcloud_keyfile]
+      @expiration_time = (app_config[:signed_url_expiration_time_in_seconds] || default_config[:signed_url_expiration_time_in_seconds]).presence&.to_i || (15 * 60)
 
       raise CustomError.new('Bucket name must be present', "'G_CLOUD_BUCKET' missing") unless @bucket_name.present?
       raise CustomError.new('Gcloud project ID must be present', "'G_CLOUD_PROJECT_ID' missing") unless @gcloud_project_id.present?
