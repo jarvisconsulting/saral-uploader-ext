@@ -4,13 +4,12 @@ require 'securerandom'
 
 module SaralUploaderExt
   class UploadService
-    def initialize(app_config = nil)
-      app_config ||= {}
-      default_config = SaralUploaderExt.config
-      @bucket_name = app_config[:gcloud_bucket] || default_config[:gcloud_bucket]
+    def initialize(gcloud_bucket: nil)
+    default_config = SaralUploaderExt.config
+      @bucket_name = gcloud_bucket || default_config[:gcloud_bucket]
       @gcloud_project_id = default_config[:gcloud_project_id]
       @gcloud_keyfile = default_config[:gcloud_keyfile]
-      @expiration_time = (app_config[:signed_url_expiration_time_in_seconds] || default_config[:signed_url_expiration_time_in_seconds]).presence&.to_i || (15 * 60)
+      @expiration_time = default_config[:signed_url_expiration_time_in_seconds].presence&.to_i || (15 * 60)
 
       raise CustomError.new('Bucket name must be present', "'G_CLOUD_BUCKET' missing") unless @bucket_name.present?
       raise CustomError.new('Gcloud project ID must be present', "'G_CLOUD_PROJECT_ID' missing") unless @gcloud_project_id.present?
@@ -21,7 +20,8 @@ module SaralUploaderExt
       raise 'Bucket not found' if @bucket.nil?
     end
 
-    def generate_upload_signed_url(file_name:, bucket_path:)
+    def generate_upload_signed_url(file_name:, bucket_path:, expiration_time: nil)
+      expiration_time =  expiration_time.presence&.to_i || @expiration_time
       raise CustomError.new('File name must be present', "Provide 'file_name'") unless file_name.present?
       raise CustomError.new('Bucket path must be present', "Provide 'bucket_path'") unless bucket_path.present?
 
@@ -33,7 +33,7 @@ module SaralUploaderExt
       url = @bucket.signed_url(
         file_path,
         method: "PUT",
-        expires: @expiration_time,
+        expires: expiration_time,
         version: :v4,
         headers: { "Content-Type" => file_type }
       )
@@ -47,10 +47,11 @@ module SaralUploaderExt
       }
     end
 
-    def get_signed_url_using_file_path(file_path:)
+    def get_signed_url_using_file_path(file_path:, expiration_time: nil)
+      expiration_time =  expiration_time.presence&.to_i || @expiration_time
       raise CustomError.new('File path must be present', "Provide 'file_path'") unless file_path.present?
 
-      url = @bucket.signed_url(file_path, expires: @expiration_time, version: :v4)
+      url = @bucket.signed_url(file_path, expires: expiration_time, version: :v4)
       raise 'File not found in this file_path' if url.nil?
 
       { url: url }
