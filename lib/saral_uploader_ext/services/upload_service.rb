@@ -28,7 +28,7 @@ module SaralUploaderExt
       uuid = SecureRandom.uuid
       modified_filename = file_name.gsub(/\s+/, "_")
       file_type = MIME::Types.type_for(modified_filename).first.to_s
-      file_path = "#{bucket_path}-#{uuid}-#{modified_filename}"
+      file_path = "#{bucket_path}/#{uuid}-#{modified_filename}"
 
       url = @bucket.signed_url(
         file_path,
