@@ -20,7 +20,7 @@ module SaralUploaderExt
       raise 'Bucket not found' if @bucket.nil?
     end
 
-    def generate_upload_signed_url(file_name:, bucket_path:, expiration_time: nil)
+    def generate_upload_signed_url(file_name:, bucket_path:, expiration_time: nil, max_file_size_in_mb: nil)
       expiration_time =  expiration_time.presence&.to_i || @expiration_time
       raise CustomError.new('File name must be present', "Provide 'file_name'") unless file_name.present?
       raise CustomError.new('Bucket path must be present', "Provide 'bucket_path'") unless bucket_path.present?
@@ -30,12 +30,19 @@ module SaralUploaderExt
       file_type = MIME::Types.type_for(modified_filename).first.to_s
       file_path = "#{bucket_path}/#{uuid}-#{modified_filename}"
 
+      headers = { "Content-Type" => file_type }
+
+      if max_file_size_in_mb.present?
+        max_file_size_in_bytes = max_file_size_in_mb.to_i * 1024 * 1024
+        headers["x-goog-content-length-range"] = "0,#{max_file_size_in_bytes}"
+      end
+
       url = @bucket.signed_url(
         file_path,
         method: "PUT",
         expires: expiration_time,
         version: :v4,
-        headers: { "Content-Type" => file_type }
+        headers: headers
       )
 
       host_name = 'https://storage.googleapis.com'
@@ -43,7 +50,8 @@ module SaralUploaderExt
         url: url,
         file_path: file_path,
         file_url: "#{host_name}/#{@bucket_name}/#{file_path}",
-        content_type: file_type
+        content_type: file_type,
+        headers: headers
       }
     end
 
