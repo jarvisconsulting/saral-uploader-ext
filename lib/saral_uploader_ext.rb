@@ -16,7 +16,6 @@ module SaralUploaderExt
 
     final_config[:gcloud_bucket] = final_config['gcloud_bucket'].to_s
     final_config[:gcloud_project_id] = final_config['gcloud_project_id'].to_s
-    final_config[:gcloud_keyfile] = final_config['gcloud_keyfile'].to_s
     final_config[:signed_url_expiration_time_in_seconds] = final_config['signed_url_expiration_time_in_seconds'].to_s
     final_config
   end

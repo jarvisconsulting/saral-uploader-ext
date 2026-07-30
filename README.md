@@ -21,7 +21,6 @@ Then run
 <pre lang="ruby">
   GCLOUD_BUCKET_NAME=your_bucket_name
   GCLOUD_PROJECT=your_gcloud_project_id
-  GCLOUD_KEYFILE=/path/to/your/gcloud/keyfile.json
   SIGNED_URL_EXPIRATION_TIME_IN_SECONDS=900 # optional, defaults to 900 (15 minutes)
 </pre>
 
@@ -30,7 +29,6 @@ Then run
 defaults: &DEFAULTS
   gcloud_bucket: <%= ENV['GCLOUD_BUCKET_NAME'] %>
   gcloud_project_id: <%= ENV['GCLOUD_PROJECT'] %>
-  gcloud_keyfile: <%= ENV['GCLOUD_KEYFILE'] %>
   signed_url_expiration_time_in_seconds: <%= ENV['SIGNED_URL_EXPIRATION_TIME_IN_SECONDS'] %>
 
 development:

@@ -14,12 +14,6 @@ module SaralUploaderExt
         raise SaralUploaderExt::CustomError.new('Gcloud project ID must be present', "'G_CLOUD_PROJECT_ID' is not found in .env file in main rails application")
       end
 
-      gcloud_keyfile = @app_config[:gcloud_keyfile]
-      unless gcloud_keyfile.present?
-        raise SaralUploaderExt::CustomError.new('Gcloud keyfile must be present', "'G_CLOUD_KEYFILE' is not found in .env file in main rails application")
-      end
-
-
       uuid = SecureRandom.uuid
       file_name = params[:file_name]
       unless file_name.present?
@@ -36,7 +30,7 @@ module SaralUploaderExt
 
       file_path = "#{bucket_path}-#{uuid}-#{modified_filename}"
 
-      storage = Google::Cloud::Storage.new(project_id: gcloud_project_id, credentials: gcloud_keyfile)
+      storage = Google::Cloud::Storage.new(project_id: gcloud_project_id)
       bucket = storage.bucket(bucket_name)
 
       expiration_time = @app_config[:signed_url_expiration_time_in_seconds].presence&.to_i || (15 * 60) # default expiration time is 15 minutes
@@ -66,17 +60,12 @@ module SaralUploaderExt
         raise SaralUploaderExt::CustomError.new('Gcloud project ID must be present', "'G_CLOUD_PROJECT_ID' is not found in .env file in main rails application")
       end
 
-      gcloud_keyfile = @app_config[:gcloud_keyfile]
-      unless gcloud_keyfile.present?
-        raise SaralUploaderExt::CustomError.new('Gcloud keyfile must be present', "'G_CLOUD_KEYFILE' is not found in .env file in main rails application")
-      end
-
       file_path = params[:file_path]
       unless file_path.present?
         raise SaralUploaderExt::CustomError.new('File path must be present', "File path must be present in 'file_path' key")
       end
 
-      storage = Google::Cloud::Storage.new(project_id: gcloud_project_id, credentials: gcloud_keyfile)
+      storage = Google::Cloud::Storage.new(project_id: gcloud_project_id)
       bucket = storage.bucket(bucket_name)
 
       raise 'Bucket not found' if bucket.nil?
@@ -104,17 +93,12 @@ module SaralUploaderExt
         raise SaralUploaderExt::CustomError.new('Gcloud project ID must be present', "'G_CLOUD_PROJECT_ID' is not found in .env file in main rails application")
       end
 
-      gcloud_keyfile = @app_config[:gcloud_keyfile]
-      unless gcloud_keyfile.present?
-        raise SaralUploaderExt::CustomError.new('Gcloud keyfile must be present', "'G_CLOUD_KEYFILE' is not found in .env file in main rails application")
-      end
-
       file_path = params[:file_path]
       unless file_path.present?
         raise SaralUploaderExt::CustomError.new('File path must be present', "File path must be present in 'file_path' key")
       end
 
-      storage = Google::Cloud::Storage.new(project_id: gcloud_project_id, credentials: gcloud_keyfile)
+      storage = Google::Cloud::Storage.new(project_id: gcloud_project_id)
       bucket = storage.bucket(bucket_name)
 
       raise 'Bucket not found' if bucket.nil?

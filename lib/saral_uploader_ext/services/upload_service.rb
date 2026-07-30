@@ -8,14 +8,12 @@ module SaralUploaderExt
     default_config = SaralUploaderExt.config
       @bucket_name = gcloud_bucket || default_config[:gcloud_bucket]
       @gcloud_project_id = default_config[:gcloud_project_id]
-      @gcloud_keyfile = default_config[:gcloud_keyfile]
       @expiration_time = default_config[:signed_url_expiration_time_in_seconds].presence&.to_i || (15 * 60)
 
       raise CustomError.new('Bucket name must be present', "'G_CLOUD_BUCKET' missing") unless @bucket_name.present?
       raise CustomError.new('Gcloud project ID must be present', "'G_CLOUD_PROJECT_ID' missing") unless @gcloud_project_id.present?
-      raise CustomError.new('Gcloud keyfile must be present', "'G_CLOUD_KEYFILE' missing") unless @gcloud_keyfile.present?
 
-      @storage = Google::Cloud::Storage.new(project_id: @gcloud_project_id, credentials: @gcloud_keyfile)
+      @storage = Google::Cloud::Storage.new(project_id: @gcloud_project_id)
       @bucket = @storage.bucket(@bucket_name)
       raise 'Bucket not found' if @bucket.nil?
     end
