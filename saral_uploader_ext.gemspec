@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rails", ">= 7.0.6"
   spec.add_dependency "google-cloud-storage"
+  spec.add_dependency "google-apis-iamcredentials_v1"
   spec.add_dependency "mime-types"
 
   spec.post_install_message = "Thanks for installing saral-uploader-ext. Please set environment variable mentioned in README.md"
