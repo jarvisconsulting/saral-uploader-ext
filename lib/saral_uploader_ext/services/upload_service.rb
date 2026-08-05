@@ -17,8 +17,14 @@ module SaralUploaderExt
       raise CustomError.new('Gcloud project ID must be present', "'G_CLOUD_PROJECT_ID' missing") unless @gcloud_project_id.present?
 
       @storage = Google::Cloud::Storage.new(project_id: @gcloud_project_id)
-      @bucket = @storage.bucket(@bucket_name)
-      raise 'Bucket not found' if @bucket.nil?
+      # skip_lookup avoids an upfront `buckets.get` call. That call goes through
+      # Google::Cloud::Storage::Service#get_bucket, which passes `generation:`/
+      # `soft_deleted:` keywords that raise ArgumentError when the legacy
+      # `google-api-client` gem's bundled (older) storage_v1 client shadows the
+      # one this gem depends on. Bucket existence still gets verified implicitly
+      # the first time an actual operation (signed_url, create_file, delete) hits
+      # the API.
+      @bucket = @storage.bucket(@bucket_name, skip_lookup: true)
     end
 
     def generate_upload_signed_url(file_name:, bucket_path:, expiration_time: nil, max_file_size_in_mb: nil)
