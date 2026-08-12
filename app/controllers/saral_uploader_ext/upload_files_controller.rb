@@ -1,8 +1,10 @@
 require 'mime/types'
 require 'google/cloud/storage'
+require 'google/apis/iamcredentials_v1'
 
 module SaralUploaderExt
   class UploadFilesController < ApplicationController
+    IAM_SIGN_BLOB_SCOPE = 'https://www.googleapis.com/auth/iam'
     def generate_upload_signed_url
       bucket_name = @app_config[:gcloud_bucket]
       unless bucket_name.present?
@@ -31,7 +33,7 @@ module SaralUploaderExt
       file_path = "#{bucket_path}-#{uuid}-#{modified_filename}"
 
       storage = Google::Cloud::Storage.new(project_id: gcloud_project_id)
-      bucket = storage.bucket(bucket_name)
+      bucket = storage.bucket(bucket_name, skip_lookup: true)
 
       expiration_time = @app_config[:signed_url_expiration_time_in_seconds].presence&.to_i || (15 * 60) # default expiration time is 15 minutes
 
@@ -39,7 +41,8 @@ module SaralUploaderExt
                                method: "PUT",
                                expires: expiration_time,
                                version: :v4,
-                               headers: { "Content-Type" => file_type })
+                               headers: { "Content-Type" => file_type },
+                               **signer_options(storage))
 
       host_name = 'https://storage.googleapis.com'
       render json: { success: true, message: 'Signed URL generated', url: url, file_path: file_path, file_url: "#{host_name}/#{bucket_name}/#{file_path}", content_type: file_type }, status: :ok
@@ -66,13 +69,13 @@ module SaralUploaderExt
       end
 
       storage = Google::Cloud::Storage.new(project_id: gcloud_project_id)
-      bucket = storage.bucket(bucket_name)
+      bucket = storage.bucket(bucket_name, skip_lookup: true)
 
       raise 'Bucket not found' if bucket.nil?
 
       expiration_time = @app_config[:signed_url_expiration_time_in_seconds].presence&.to_i || (15 * 60) # default expiration time is 15 minutes
 
-      url = bucket.signed_url(file_path.to_s, expires: expiration_time, version: :v4)
+      url = bucket.signed_url(file_path.to_s, expires: expiration_time, version: :v4,  **signer_options(storage))
       raise 'File not found in this file_path' if url.nil?
 
       render json: { success: true, message: 'Signed URL generated', url: url }, status: :ok
@@ -99,7 +102,7 @@ module SaralUploaderExt
       end
 
       storage = Google::Cloud::Storage.new(project_id: gcloud_project_id)
-      bucket = storage.bucket(bucket_name)
+      bucket = storage.bucket(bucket_name, skip_lookup: true)
 
       raise 'Bucket not found' if bucket.nil?
 
@@ -113,6 +116,63 @@ module SaralUploaderExt
       render json: { success: false, message: e.message, description: e.description }, status: :bad_request
     rescue => e
       render json: { success: false, message: e.message }, status: :bad_request
+    end
+
+    private
+
+    # When credentials come from a JSON keyfile, google-cloud-storage can sign
+    # locally using the private key embedded in that keyfile, so no override is
+    # needed. When running on GCE/GKE via Application Default Credentials
+    # (Workload Identity), there is no private key available, so we resolve the
+    # attached service account's email and sign via the IAM Credentials API
+    # (self-impersonation) instead.
+    def signer_options(storage)
+      @signer_options ||= begin
+                            credentials = storage.service.credentials
+                            if credentials.issuer.present? && credentials.signing_key.present?
+                              {}
+                            else
+                              service_account_email = fetch_service_account_email
+                              { issuer: service_account_email, signer: iam_sign_blob_proc(service_account_email) }
+                            end
+                          end
+    end
+
+    def fetch_service_account_email
+      host = Google::Auth::GCECredentials.metadata_host
+      connection = Faraday.new(url: "http://#{host}") do |conn|
+        conn.options.timeout = 1.0
+        conn.options.open_timeout = 0.1
+        conn.adapter Faraday.default_adapter
+      end
+
+      response = connection.get(
+        '/computeMetadata/v1/instance/service-accounts/default/email',
+        nil,
+        'Metadata-Flavor' => 'Google'
+      )
+      unless response.status == 200
+        raise CustomError.new(
+          'Unable to resolve signer identity',
+          'Could not fetch the attached service account email from the GCE metadata server'
+        )
+      end
+
+      response.body
+    end
+
+    def iam_sign_blob_proc(service_account_email)
+      iam_client = Google::Apis::IamcredentialsV1::IAMCredentialsService.new
+      iam_client.authorization = Google::Auth.get_application_default([IAM_SIGN_BLOB_SCOPE])
+
+      lambda do |string_to_sign|
+        request = Google::Apis::IamcredentialsV1::SignBlobRequest.new(payload: string_to_sign)
+        response = iam_client.sign_service_account_blob(
+          "projects/-/serviceAccounts/#{service_account_email}",
+          request
+        )
+        response.signed_blob
+      end
     end
 
   end
